@@ -20,6 +20,25 @@ export interface LigaResumo {
   taxaResfriamento: number;
 }
 
+export interface CurvaPoint {
+  tempo: number;
+  valor: number;
+}
+
+interface Derivadas {
+  primeira: number[];
+  segunda: number[];
+  tempLiquidus: number;
+  tempFinal: number;
+  tempMaxResfriamento: number;
+  tempMinResfriamento: number;
+  deltaT: number;
+  contracaoPrimaria: number;
+  contracaoSecundaria: number;
+  expansaoEutetica: number;
+}
+
+
 export interface LigaCompleta {
   liga: string;
   pontos: number;
@@ -31,6 +50,25 @@ export interface LigaCompleta {
   tempoTotal: number;
   taxaResfriamento: number;
   curva: CurvaPoint[];
+
+  derivadas: Derivadas; // ← apenas arrays de derivadas
+
+  // Pontos característicos (no mesmo nível da liga, não dentro de derivadas)
+  tempLiquidus: number;
+  tempFinal: number;
+  tempMaxResfriamento: number;
+  tempMinResfriamento: number;
+  deltaT: number;
+
+  // Segunda derivada
+  contracaoPrimaria: number;
+  contracaoSecundaria: number;
+  expansaoEutetica: number;
+}
+
+export interface AnaliseData {
+  aba: string;
+  ligas: Record<string, LigaCompleta>;
 }
 
 export interface ComparacaoResponse {
@@ -73,11 +111,15 @@ export interface ComparacaoResponse {
   };
 }
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"; 
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 // Troque 3001 pela porta real do seu backend Node
 
 // Função genérica para requests
-async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+async function apiFetch<T>(
+  endpoint: string,
+  options?: RequestInit
+): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${endpoint}`, {
     headers: {
       "Content-Type": "application/json",
@@ -99,7 +141,9 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
 
 // Carregar todas as curvas
 export async function getCurvas() {
-  return apiFetch<{ aba: string; ligas: Record<string, LigaCompleta> }>("/curvas");
+  return apiFetch<{ aba: string; ligas: Record<string, LigaCompleta> }>(
+    "/curvas"
+  );
 }
 
 // Analisar uma liga específica
@@ -108,7 +152,10 @@ export async function getLiga(liga: string): Promise<LigaData> {
 }
 
 // Comparar duas ligas
-export async function compararLigas(liga1: string, liga2: string): Promise<ComparacaoResponse> {
+export async function compararLigas(
+  liga1: string,
+  liga2: string
+): Promise<ComparacaoResponse> {
   return apiFetch<ComparacaoResponse>(`/curvas/comparar/${liga1}/${liga2}`);
 }
 

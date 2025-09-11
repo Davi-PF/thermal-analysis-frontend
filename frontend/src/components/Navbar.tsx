@@ -9,6 +9,7 @@ const navItems = [
   { href: "/curvas", label: "Ligas" },
   { href: "/curvas/analise", label: "Análise Geral" },
   { href: "/curvas/comparar", label: "Comparar" },
+  { href: "/curvas/analiseAvancada", label: "Análise Avançada"},
 ];
 
 export function Navbar() {
